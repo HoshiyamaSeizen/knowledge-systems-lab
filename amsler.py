@@ -57,7 +57,7 @@ def calculate(values, label, errLabel, window):
         window.destroy()
     elif (("#".join(vals)).count("Да") == 3):
         label.config(text="У вас нет макулодистрофии")
-        label.config(fg="red")
+        label.config(fg="green")
         window.destroy()
     else:
         errLabel.config(text="Ответьте на все вопросы")
