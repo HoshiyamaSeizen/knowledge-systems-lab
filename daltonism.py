@@ -2,7 +2,10 @@ from tkinter import *
 from tkinter import ttk
 from tools import *
 
+countAnswers = 13
 current = None
+currentEntry = None
+answers = []
 
 def daltonismTest(window, resLabel):
     newWindow = Toplevel(window)
@@ -14,33 +17,60 @@ def daltonismTest(window, resLabel):
     global current
     current = 1
 
-    img = loadImage("./assets/d1.jpg", 500, 300)
-    panel = Label(newWindow, image=img)
-    panel.image = img
+    panel = Label(newWindow)
     panel.grid(row=1, padx=(100, 0))
 
+    err = Label(newWindow, text = "", fg='red')
+    err.grid(row = 2, padx=(100, 0))
+
     frame = Frame(newWindow)
-    frame.grid(row=2)
+    frame.grid(row=3)
 
-    next(panel, frame)  
+    next(panel, frame, err, newWindow, resLabel)
 
-    Button(newWindow, text="Дальше", width=25, command= lambda: next(panel, frame)).grid(row=4, padx=(100, 0), pady=(100, 0))  
+    Button(newWindow, text="Дальше", width=25, command= lambda: next(panel, frame, err, newWindow, resLabel)).grid(row=4, padx=(100, 0), pady=(100, 0))  
 
 
-def next(panel, frame):
+def next(panel, frame, errLabel, window, resLabel):
     global current
-    if(current == 14): return calculate()
-    img = loadImage(f"./assets/d{current}.jpg", 500, 300)
-    panel.config(image = img)
-    panel.image = img
+    global currentEntry
+    global answers
+
+    if(current <= countAnswers):
+        img = loadImage(f"./assets/d{current}.jpg", 500, 300)
+        panel.config(image = img)
+        panel.image = img
+
+    err = False
+    # Сохранение данных из полей ввода (надо доработать, если там не импуты а чекбоксы или радио-баттоны)
+    if(currentEntry):
+        # Проверка допустимости ответа, иначе err = True
+        answers.append(currentEntry.get())
+    ###
+
+    if(current == countAnswers + 1): return calculate(window, resLabel)
 
     for widget in frame.winfo_children():
         widget.destroy()
     
-    Label(frame, text=f"Question {current}").pack()
+    Label(frame, text=f"Question {current}").pack() # Текст вопроса
+
+    # Добавление поля для ответа (разные в зависимости от вопроса)
+    if(current == 1):
+        currentEntry = Entry(frame)
+        currentEntry.pack()
+    else:
+        currentEntry = Entry(frame)
+        currentEntry.pack()
+    ###
+
+    errLabel.config(text="Некорректное значение" if err else "")
 
     current+=1
 
 
-def calculate():
-    pass
+def calculate(window, label):
+    print(answers)
+    label.config(text="Ответ")
+    label.config(fg="green")
+    window.destroy()
