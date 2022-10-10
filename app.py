@@ -6,7 +6,7 @@ from amsler import amslerTest
 
 if __name__ == "__main__":
     window = Tk()
-    window.geometry("600x300")
+    window.geometry("700x300")
     window.resizable(False, False)
     window.title("Проверка зрения")
 
