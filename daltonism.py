@@ -44,7 +44,6 @@ def next(panel, frame, errLabel, window, resLabel):
     one_choice_questions = [3]
     multiple_choice_questions = [5, 10, 13]
     if currentEntry or value_inside:
-        # Проверка допустимости ответа, иначе err = True
         if currentEntry and (current - 1) in input_questions:
             ans = currentEntry.get()
             if(not ans.isnumeric()): err = True
@@ -113,7 +112,7 @@ def calculate(window, label):
         color = 'red'
     elif 5 <= res < 11:
         res_text = 'Возможно у вас дальтонизм.'
-        color = 'yellow'
+        color = 'orange'
 
     label.config(text=res_text)
     label.config(fg=color)
