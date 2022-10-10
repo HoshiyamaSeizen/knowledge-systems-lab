@@ -36,24 +36,24 @@ def next(panel, frame, errLabel, window, resLabel):
     global value_inside
     global answers
 
-    if(current <= countAnswers):
-        img = loadImage(f"./assets/a{current}.jpg", 300, 300) # Для каждого изображения свой размер
-        if (current == 2):
-            img = loadImage(f"./assets/a2.jpg", 323, 72)
-        panel.config(image = img)
-        panel.image = img
-
     err = False
-    # Сохранение данных из полей ввода (надо доработать, если там не импуты а чекбоксы или радио-баттоны)
-    if(value_inside):
-        # Проверка допустимости ответа, иначе err = True
+    if(current!= 1 and value_inside and value_inside.get() != "Выберите значение"):
         answers.append(value_inside.get())
-    ###
+    elif(current != 1): err = True
+
+    errLabel.config(text="Некорректное значение" if err else "")
+    if(err): return
 
     if(current == countAnswers + 1): return calculate(window, resLabel)
 
     for widget in frame.winfo_children():
         widget.destroy()
+
+    img = loadImage(f"./assets/a{current}.jpg", 300, 300) # Для каждого изображения свой размер
+    if (current == 2):
+        img = loadImage(f"./assets/a2.jpg", 323, 72)
+    panel.config(image = img)
+    panel.image = img
     
     question = ""
     if current == 1:
@@ -63,19 +63,14 @@ def next(panel, frame, errLabel, window, resLabel):
     if current == 3:
         question = "На данной картинке лучи с определённого момента начнут сливаться.\n Граница четкой видимости лучей, которую вы видите, представляет собой эллипс (не является правильной окружностью)?"
     
-    Label(frame, text= f"Вопрос {current}:\n{question}").pack()  # Текст вопроса
+    Label(frame, text= f"Вопрос {current}:\n{question}").pack()
 
-    # Добавление поля для ответа (разные в зависимости от вопроса)
     options_list = ["Да", "Нет"]
     value_inside = StringVar(frame)
-  
-    # Set the default value of the variable
+
     value_inside.set("Выберите значение")
     currentEntry = OptionMenu(frame, value_inside, *options_list)
     currentEntry.pack()
-    ###
-
-    errLabel.config(text="Некорректное значение" if err else "")
 
     current+=1
 
@@ -84,18 +79,15 @@ def calculate(window, label):
     print(answers)
     if (("#".join(answers)).count("Да") == 3):
         label.config(text="У вас астигматизм")
-        label.config(fg="red")
-        window.destroy()
+        label.config(fg="red") 
     if (("#".join(answers)).count("Да") == 2):
         label.config(text="С большой вероятностью у вас астигматизм")
         label.config(fg="orange")
-        window.destroy()
     if (("#".join(answers)).count("Да") == 1):
         label.config(text="Возможно у вас астигматизм")
         label.config(fg="black")
-        window.destroy()
     if (("#".join(answers)).count("Да") == 0):
         label.config(text="У вас нет астигматизма")
         label.config(fg="green")
-        window.destroy()
     answers.clear()
+    window.destroy()

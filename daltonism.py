@@ -30,13 +30,7 @@ def daltonism_test(window, resLabel):
 
     next(panel, frame, err, new_window, resLabel)
 
-    Button(new_window, text="Дальше", width=25, command=lambda: next(panel, frame, err, new_window, resLabel)).grid(row=4,
-                                                                                                                  padx=(
-                                                                                                                      100,
-                                                                                                                      0),
-                                                                                                                  pady=(
-                                                                                                                      100,
-                                                                                                                      0))
+    Button(new_window, text="Дальше", width=25, command=lambda: next(panel, frame, err, new_window, resLabel)).grid(row=4, padx=(100, 0), pady=(100,0))
 
 
 def next(panel, frame, errLabel, window, resLabel):
@@ -45,28 +39,26 @@ def next(panel, frame, errLabel, window, resLabel):
     global answers
     global value_inside
 
-    if (current <= countAnswers):
-        img = loadImage(f"./assets/d{current}.jpg", 500, 300)
-        panel.config(image=img)
-        panel.image = img
-
     err = False
-    # Сохранение данных из полей ввода (надо доработать, если там не импуты а чекбоксы или радио-баттоны)
     input_questions = [1, 2, 4, 6, 7, 8, 9, 11, 12]
     one_choice_questions = [3]
     multiple_choice_questions = [5, 10, 13]
     if currentEntry or value_inside:
         # Проверка допустимости ответа, иначе err = True
         if currentEntry and (current - 1) in input_questions:
-            answers.append(currentEntry.get())
+            ans = currentEntry.get()
+            if(not ans.isnumeric()): err = True
+            else: answers.append(ans)
         elif value_inside and (current - 1) in one_choice_questions:
-            answers.append(value_inside.get())
+            ans = value_inside.get()
+            if(ans == "Выберите значение"): err = True
+            else: answers.append(ans)
         elif (current - 1) in multiple_choice_questions:
-            selected = currentEntry.curselection()  # returns a tuple
+            selected = currentEntry.curselection()
             answers.append(selected)
 
-    print(answers)
-    ###
+    errLabel.config(text="Некорректное значение" if err else "")
+    if(err): return
 
     if current == countAnswers + 1:
         calculate(window, resLabel)
@@ -75,14 +67,16 @@ def next(panel, frame, errLabel, window, resLabel):
 
     for widget in frame.winfo_children():
         widget.destroy()
+    
+    img = loadImage(f"./assets/d{current}.jpg", 500, 300)
+    panel.config(image=img)
+    panel.image = img
 
-    # Добавление поля для ответа (разные в зависимости от вопроса)
+    Label(frame, text=f"Вопрос {current}: Что вы видите на рисунке?").pack()
     if current in input_questions:
-        Label(frame, text=f"Question {current}").pack()  # Текст вопроса
         currentEntry = Entry(frame)
         currentEntry.pack()
     elif current in one_choice_questions:
-        # Добавление поля для ответа (разные в зависимости от вопроса)
         options_list = []
         if current == 3:
             options_list.extend(['Круг', 'Треугольник', 'Квадрат', 'Только цветные кружочки'])
@@ -91,7 +85,6 @@ def next(panel, frame, errLabel, window, resLabel):
         currentEntry = OptionMenu(frame, value_inside, *options_list)
         currentEntry.pack()
     elif current in multiple_choice_questions:
-        # Добавление поля для ответа (разные в зависимости от вопроса)
         options_list = []
         if current == 5 or current == 13:
             options_list.extend(['Круг', 'Треугольник', 'Квадрат', 'Только цветные кружочки'])
@@ -103,9 +96,6 @@ def next(panel, frame, errLabel, window, resLabel):
         for val in options_list:
             currentEntry.insert(END, val)
         currentEntry.pack()
-    ###
-
-    errLabel.config(text="Некорректное значение" if err else "")
 
     current += 1
 
@@ -113,17 +103,16 @@ def next(panel, frame, errLabel, window, resLabel):
 def calculate(window, label):
     right_answers = ['96', '9', 'Треугольник', '13', (0, 1), '5', '9', '136', '30', (0, 1), '36', '9', (0, 1)]
     res = sum(list(map(lambda a, b: a == b, answers, right_answers)))
-    # print(answers, res)
     res_text = 'Ответ'
     color = "green"
     if res >= 11:
-        res_text = "У Вас отличное цветовосприятие."
+        res_text = "У Вас нет дальтонизма."
         color = 'green'
     if res < 5:
-        res_text = 'У Вас большие проблемы с цветовостриятием.'
+        res_text = 'У Вас дальтонизм.'
         color = 'red'
     elif 5 <= res < 11:
-        res_text = 'У Вас есть проблемы с цветовостриятием.'
+        res_text = 'Возможно у вас дальтонизм.'
         color = 'yellow'
 
     label.config(text=res_text)
