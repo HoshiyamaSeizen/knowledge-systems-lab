@@ -1,6 +1,6 @@
 from tkinter import *
 from perception import perceptionTest
-from daltonism import daltonismTest
+from daltonism import daltonism_test
 from astigmatism import astigmatismTest
 from amsler import amslerTest
 
@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     res2 = Label(window, text ="Не проверено")
     res2.grid(row=3, column=1, padx=(0, 0))
-    Button(window, text="Тест на дальтонизм", width=25, command= lambda: daltonismTest(window, res2)).grid(row=2, column=0, padx=(100, 0), pady=(20, 0))
+    Button(window, text="Тест на дальтонизм", width=25, command= lambda: daltonism_test(window, res2)).grid(row=2, column=0, padx=(100, 0), pady=(20, 0))
     Label(window, text ="Результат на дальтонизм: ").grid(row=3, column=0, padx=(100, 0))
 
     res3 = Label(window, text ="Не проверено")
